@@ -3,7 +3,8 @@ MOODS = [
     "sad",
     "angry",
     "romantic",
-    "bored",
     "stressed",
+    "lonely",
+    "bored",
     "excited"
 ]

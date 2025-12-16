@@ -3,7 +3,8 @@ MOOD_GENRE_MAP = {
     "sad": ["Drama"],
     "angry": ["Action", "Thriller"],
     "romantic": ["Romance"],
+    "stressed": ["Family", "Comedy"],
+    "lonely": ["Drama", "Romance"],
     "bored": ["Mystery", "Fantasy"],
-    "stressed": ["Comedy", "Family"],
     "excited": ["Action", "Sci-Fi"]
 }

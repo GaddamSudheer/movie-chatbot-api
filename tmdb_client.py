@@ -56,10 +56,10 @@ FALLBACK_BY_GENRE = {
     ],
     "Sci-Fi": [
         "Interstellar",
-        "Inception",
         "The Matrix",
         "Arrival",
-        "Blade Runner 2049"
+        "Blade Runner 2049",
+        "Inception"
     ],
     "Family": [
         "Paddington",
@@ -67,8 +67,23 @@ FALLBACK_BY_GENRE = {
         "Up",
         "The Incredibles",
         "Toy Story"
+    ],
+    "Mystery": [
+        "Knives Out",
+        "The Prestige",
+        "The Girl with the Dragon Tattoo",
+        "Zodiac",
+        "The Sixth Sense"
+    ],
+    "Fantasy": [
+        "Harry Potter and the Sorcerer's Stone",
+        "The Lord of the Rings: The Fellowship of the Ring",
+        "Pan's Labyrinth",
+        "Life of Pi",
+        "Stardust"
     ]
 }
+
 
 def get_movies_by_genre(genre: str):
     try:

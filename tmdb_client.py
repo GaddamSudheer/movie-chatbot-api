@@ -85,38 +85,31 @@ FALLBACK_BY_GENRE = {
 }
 
 
-def get_movies_by_genre(genre: str):
-    try:
-        genre_id = GENRE_ID_MAP.get(genre)
-        if not genre_id:
-            raise ValueError("Unknown genre")
+def get_movies_by_genres(genres, limit=5):
+    all_movies = []
 
-        url = f"{BASE_URL}/discover/movie"
-        params = {
-            "api_key": API_KEY,
-            "with_genres": genre_id,
-            "sort_by": "popularity.desc",
-            "vote_count.gte": 100,
-            "page": random.randint(1, 5)
-        }
-
-        r = requests.get(
-            url,
-            params=params,
-            headers={"User-Agent": "Mozilla/5.0"},
-            timeout=10
+    for genre_id in genres:
+        genre_name = next(
+            (name for name, gid in GENRE_ID_MAP.items() if gid == genre_id),
+            None
         )
-        r.raise_for_status()
+        if not genre_name:
+            continue
 
-        results = r.json().get("results", [])
-        if not results:
-            raise RuntimeError("Empty TMDB response")
+        movies = get_movies_by_genres(genre_name)
+        all_movies.extend(movies)
 
-        return random.sample(results, min(5, len(results)))
+    random.shuffle(all_movies)
 
-    except Exception:
-        print("\n⚠ TMDB unavailable. Using fallback.")
-        return get_fallback_movies(genre)
+    cleaned = []
+    for m in all_movies:
+        cleaned.append({
+            "title": m.get("title"),
+            "rating": m.get("vote_average"),
+            "overview": m.get("overview")
+        })
+
+    return cleaned[:limit]
 
 def get_fallback_movies(genre: str):
     titles = FALLBACK_BY_GENRE.get(genre, [])

@@ -9,13 +9,17 @@ from tmdb_client import get_movies_by_genres
 from omdb_client import get_movie_trivia
 import joblib
 from sentence_transformers import SentenceTransformer
+from functools import lru_cache
 
 app = FastAPI(title="Movie Recommendation Chatbot API")
 # Load emotion model and embedder ONCE at startup
-EMOTION_MODEL_PATH = "emotion_model/emotion_classifier_4class.pkl"
+#EMOTION_MODEL_PATH = "emotion_model/emotion_classifier_4class.pkl"
 
-emotion_clf = joblib.load(EMOTION_MODEL_PATH)
-embedder = SentenceTransformer("all-MiniLM-L6-v2")
+@lru_cache(maxsize=1)
+def get_emotion_model():
+    embedder = SentenceTransformer("all-MiniLM-L6-v2")
+    clf = joblib.load("emotion_model/emotion_classifier_4class.pkl")
+    return embedder, clf
 
 EMOTION_LABELS = ["angry", "happy", "neutral", "sad"]
 

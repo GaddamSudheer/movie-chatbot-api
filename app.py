@@ -48,3 +48,11 @@ def trivia(req: TriviaRequest):
         raise HTTPException(status_code=404, detail=trivia["Error"])
 
     return trivia
+
+@app.get("/")
+def root():
+    return {
+        "status": "live",
+        "docs": "/docs",
+        "health": "ok"
+    }

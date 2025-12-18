@@ -6,3 +6,4 @@ numpy
 requests
 python-dotenv
 twilio
+python-multipart==0.0.9

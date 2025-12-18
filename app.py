@@ -11,8 +11,9 @@ import traceback
 app = FastAPI(title="Movie Emotion Chatbot")
 
 
-VECTORIZER = joblib.load("emotion_model/tfidf_vectorizer.pkl")
-CLASSIFIER = joblib.load("emotion_model/emotion_classifier_final.pkl")
+
+VECTORIZER = joblib.load("emotion_model/vectorizer.pkl")
+CLASSIFIER = joblib.load("emotion_model/classifier.pkl")
 
 
 
@@ -47,9 +48,11 @@ EMOTION_TO_GENRE = {
 # -----------------------------
 @lru_cache(maxsize=1)
 def load_model():
-    vectorizer = joblib.load("emotion_model/tfidf_vectorizer.pkl")
-    classifier = joblib.load("emotion_model/emotion_classifier_tfidf.pkl")
-    return vectorizer, classifier
+    import joblib
+    VECTORIZER = joblib.load("emotion_model/vectorizer.pkl")
+    CLASSIFIER = joblib.load("emotion_model/classifier.pkl")
+
+    return VECTORIZER, CLASSIFIER
 
 
 def predict_emotion(text: str) -> str:
@@ -87,13 +90,13 @@ def chat(req: ChatRequest):
 @app.post("/whatsapp")
 async def whatsapp_webhook(request: Request):
     form = await request.form()
-    user_text = form.get("Body", "")
+    user_text = form.get("Body", "").strip()
 
     X = VECTORIZER.transform([user_text])
     emotion = CLASSIFIER.predict(X)[0]
 
     genre = EMOTION_TO_GENRE.get(emotion, "Drama")
-    movies = get_movies_by_genre(genre)
+    movies = get_movies_by_genres(genre)
     titles = [m["title"] for m in movies][:5]
 
     reply = (

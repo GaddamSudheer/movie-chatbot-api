@@ -9,6 +9,10 @@ from twilio.twiml.messaging_response import MessagingResponse
 app = FastAPI(title="Movie Emotion Chatbot")
 
 
+VECTORIZER = joblib.load("emotion_model/tfidf_vectorizer.pkl")
+CLASSIFIER = joblib.load("emotion_model/emotion_classifier_final.pkl")
+
+
 
 # -----------------------------
 # Request / Response Models
@@ -84,6 +88,18 @@ async def whatsapp_webhook(request: Request):
     user_text = form.get("Body", "")
 
     resp = MessagingResponse()
-    resp.message(f"You said: {user_text}")
+    X = VECTORIZER.transform([incoming_msg])
+    emotion = CLASSIFIER.predict(X)[0]
+    genre = EMOTION_TO_GENRE.get(emotion, "Drama")
+
+    movies = get_movies_by_genre(genre)
+    titles = [m["title"] for m in movies][:5]
+
+    reply = (
+    f"🧠 Mood detected: {emotion.capitalize()}\n"
+    f"🎬 Recommended ({genre}):\n"
+    + "\n".join(f"• {t}" for t in titles)
+    )
+
 
     return PlainTextResponse(str(resp), media_type="application/xml")

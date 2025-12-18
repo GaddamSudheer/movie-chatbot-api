@@ -79,7 +79,7 @@ def chat(req: ChatRequest):
     }
 
 @app.post("/whatsapp")
-async def whatsapp_webhook(request: Request):
+async def whatsapp_webhook(request: ChatRequest):
     form = await request.form()
     incoming_msg = form.get("Body", "").strip()
 

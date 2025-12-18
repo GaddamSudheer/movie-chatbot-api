@@ -88,11 +88,11 @@ async def whatsapp_webhook(request: Request):
     user_text = form.get("Body", "")
 
     resp = MessagingResponse()
-    X = VECTORIZER.transform([incoming_msg])
+    X = VECTORIZER.transform([user_text])
     emotion = CLASSIFIER.predict(X)[0]
     genre = EMOTION_TO_GENRE.get(emotion, "Drama")
 
-    movies = get_movies_by_genre(genre)
+    movies = get_movies_by_genres(genre)
     titles = [m["title"] for m in movies][:5]
 
     reply = (

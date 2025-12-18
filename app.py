@@ -4,6 +4,7 @@ from functools import lru_cache
 import joblib
 
 from tmdb_client import get_movies_by_genres
+from twilio.twiml.messaging_response import MessagingResponse
 
 app = FastAPI(title="Movie Emotion Chatbot")
 
@@ -77,3 +78,25 @@ def chat(req: ChatRequest):
         "recommendations": movies
     }
 
+@app.post("/whatsapp")
+async def whatsapp_webhook(request: Request):
+    form = await request.form()
+    incoming_msg = form.get("Body", "").strip()
+
+    if not incoming_msg:
+        resp = ChatResponse()
+        resp.message("Please send a text message.")
+        return str(resp)
+
+    # Reuse existing logic
+    emotion = predict_emotion(incoming_msg)
+    genre = EMOTION_TO_GENRE.get(emotion, "Drama")
+    movies = get_movies_by_genres(genre)
+
+    reply = f"🧠 Mood detected: *{emotion.title()}*\n🎬 Recommended ({genre}):\n"
+    for m in movies[:5]:
+        reply += f"• {m.get('title', 'Unknown')}\n"
+
+    resp = ChatResponse()
+    resp.message(reply)
+    return str(resp)

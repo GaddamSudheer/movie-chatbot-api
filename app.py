@@ -86,28 +86,23 @@ def chat(req: ChatRequest):
 
 @app.post("/whatsapp")
 async def whatsapp_webhook(request: Request):
-    try:
-        form = await request.form()
-        user_text = form.get("Body", "")
+    form = await request.form()
+    user_text = form.get("Body", "")
 
-        X = VECTORIZER.transform([user_text])
-        emotion = CLASSIFIER.predict(X)[0]
-        genre = EMOTION_TO_GENRE.get(emotion, "Drama")
+    X = VECTORIZER.transform([user_text])
+    emotion = CLASSIFIER.predict(X)[0]
 
-        movies = get_movies_by_genres(genre)
-        titles = [m["title"] for m in movies][:5]
+    genre = EMOTION_TO_GENRE.get(emotion, "Drama")
+    movies = get_movies_by_genre(genre)
+    titles = [m["title"] for m in movies][:5]
 
-        reply = (
-            f"🧠 Mood detected: {emotion.capitalize()}\n"
-            f"🎬 Recommended ({genre}):\n"
-            + "\n".join(f"• {t}" for t in titles)
-        )
-
-    except Exception as e:
-        print("WHATSAPP ERROR:")
-        traceback.print_exc()
-        reply = "⚠️ Internal error. Please try again."
+    reply = (
+        f"🧠 Mood detected: {emotion.capitalize()}\n"
+        f"🎬 Recommended ({genre}):\n"
+        + "\n".join(f"• {t}" for t in titles)
+    )
 
     resp = MessagingResponse()
     resp.message(reply)
     return PlainTextResponse(str(resp), media_type="application/xml")
+
